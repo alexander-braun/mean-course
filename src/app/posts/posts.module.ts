@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { PostCreateComponent } from './post-create/post-create.component';
 import { PostListComponent } from './post-list/post-list.component';
 import { MaterialModule } from '../material/material.module';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { LayoutModule } from '@angular/cdk/layout';
 import { RouterModule } from '@angular/router';
 
@@ -12,7 +12,7 @@ import { RouterModule } from '@angular/router';
   imports: [
     CommonModule,
     MaterialModule,
-    FormsModule,
+    ReactiveFormsModule,
     LayoutModule,
     RouterModule,
   ],

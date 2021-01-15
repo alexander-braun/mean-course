@@ -1,5 +1,5 @@
-import { Component, OnInit, EventEmitter, Output } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Post } from '../post.model';
 import { PostsService } from '../posts.service';
@@ -14,6 +14,7 @@ export class PostCreateComponent implements OnInit {
   private postId: string;
   post: Post;
   loading = false;
+  form: FormGroup;
 
   constructor(
     private postService: PostsService,
@@ -21,6 +22,14 @@ export class PostCreateComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.form = new FormGroup({
+      title: new FormControl(null, {
+        validators: [Validators.required, Validators.minLength(3)],
+      }),
+      content: new FormControl(null, {
+        validators: [Validators.required],
+      }),
+    });
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       if (paramMap.has('postId')) {
         this.mode = 'edit';
@@ -33,6 +42,10 @@ export class PostCreateComponent implements OnInit {
             title: postData.title,
             content: postData.content,
           };
+          this.form.setValue({
+            title: this.post.title,
+            content: this.post.content,
+          });
         });
       } else {
         this.mode = 'create';
@@ -41,22 +54,22 @@ export class PostCreateComponent implements OnInit {
     });
   }
 
-  onSavePost(postForm: NgForm): void {
+  onSavePost(): void {
     const post: Post = {
-      title: postForm.value.title,
-      content: postForm.value.content,
+      title: this.form.value.title,
+      content: this.form.value.content,
       id: null,
     };
     this.loading = true;
-    if (postForm.valid && this.mode === 'create') {
+    if (this.form.valid && this.mode === 'create') {
       this.postService.addPost(post);
-    } else if (postForm.valid && this.mode === 'edit') {
+    } else if (this.form.valid && this.mode === 'edit') {
       this.postService.updatePost(this.postId, {
         id: this.postId,
-        title: postForm.value.title,
-        content: postForm.value.content,
+        title: this.form.value.title,
+        content: this.form.value.content,
       });
     }
-    postForm.resetForm();
+    this.form.reset();
   }
 }
